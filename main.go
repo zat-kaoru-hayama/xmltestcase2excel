@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 
@@ -8,12 +9,15 @@ import (
 	_ "github.com/mattn/getwild"
 )
 
+var flagTemplate = flag.String("template", "template.xlsx", "Template xlsx file")
+var flagOutput = flag.String("o", "output.xlsx", "Output xlsx file")
+
 func mains(args []string) error {
 	items, err := readXmlFiles(args)
 	if err != nil {
 		return err
 	}
-	xls, err := excelize.OpenFile("template.xlsx")
+	xls, err := excelize.OpenFile(*flagTemplate)
 	if err != nil {
 		return err
 	}
@@ -25,12 +29,13 @@ func mains(args []string) error {
 		xls.SetCellValue(sheet, fmt.Sprintf("C%d", i+3), item1.Operation)
 		xls.SetCellValue(sheet, fmt.Sprintf("E%d", i+3), item1.Status)
 	}
-	xls.SaveAs("output.xlsx")
+	xls.SaveAs(*flagOutput)
 	return nil
 }
 
 func main() {
-	if err := mains(os.Args[1:]); err != nil {
+	flag.Parse()
+	if err := mains(flag.Args()); err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
