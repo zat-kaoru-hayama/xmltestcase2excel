@@ -13,12 +13,17 @@ func mains(args []string) error {
 	if err != nil {
 		return err
 	}
-	xls := excelize.NewFile()
-	const sheet = "Sheet1"
+	xls, err := excelize.OpenFile("template.xlsx")
+	if err != nil {
+		return err
+	}
+	// style, err := xls.NewStyle(`{ "alignment": { "wrap_text":true } }`)
+
+	const sheet = "01.コマンド名"
 	for i, item1 := range items {
-		xls.SetCellValue(sheet, fmt.Sprintf("A%d", i+1), item1.Case)
-		xls.SetCellValue(sheet, fmt.Sprintf("B%d", i+1), item1.Operation)
-		xls.SetCellValue(sheet, fmt.Sprintf("C%d", i+1), item1.Status)
+		xls.SetCellValue(sheet, fmt.Sprintf("B%d", i+3), item1.Case)
+		xls.SetCellValue(sheet, fmt.Sprintf("C%d", i+3), item1.Operation)
+		xls.SetCellValue(sheet, fmt.Sprintf("E%d", i+3), item1.Status)
 	}
 	xls.SaveAs("output.xlsx")
 	return nil
