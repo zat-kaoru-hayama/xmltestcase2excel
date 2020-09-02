@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
 	_ "github.com/mattn/getwild"
 )
 
@@ -12,16 +13,14 @@ func mains(args []string) error {
 	if err != nil {
 		return err
 	}
-	for _, item1 := range items {
-		println("###", shrink(item1.Case))
-		println()
-		println(shrink(item1.Operation))
-		if item1.Status != "" {
-			println()
-			println(item1.Status)
-		}
-		println()
+	xls := excelize.NewFile()
+	const sheet = "Sheet1"
+	for i, item1 := range items {
+		xls.SetCellValue(sheet, fmt.Sprintf("A%d", i+1), item1.Case)
+		xls.SetCellValue(sheet, fmt.Sprintf("B%d", i+1), item1.Operation)
+		xls.SetCellValue(sheet, fmt.Sprintf("C%d", i+1), item1.Status)
 	}
+	xls.SaveAs("output.xlsx")
 	return nil
 }
 
