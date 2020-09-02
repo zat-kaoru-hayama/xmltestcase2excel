@@ -5,12 +5,15 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/360EntSecGroup-Skylar/excelize"
+	"github.com/360EntSecGroup-Skylar/excelize/v2"
 	_ "github.com/mattn/getwild"
 )
 
-var flagTemplate = flag.String("template", "template.xlsx", "Template xlsx file")
-var flagOutput = flag.String("o", "output.xlsx", "Output xlsx file")
+var (
+	flagTemplate = flag.String("template", "template.xlsx", "Template xlsx file")
+	flagOutput   = flag.String("o", "output.xlsx", "Output xlsx file")
+	flagStartRow = flag.Int("startrow", 3, "Start RowLine")
+)
 
 func mains(args []string) error {
 	items, err := readXmlFiles(args)
@@ -23,11 +26,14 @@ func mains(args []string) error {
 	}
 	// style, err := xls.NewStyle(`{ "alignment": { "wrap_text":true } }`)
 
-	const sheet = "01.コマンド名"
+	sheetList := xls.GetSheetList()
+	sheet := sheetList[len(sheetList)-1]
+	startRow := *flagStartRow
+
 	for i, item1 := range items {
-		xls.SetCellValue(sheet, fmt.Sprintf("B%d", i+3), item1.Case)
-		xls.SetCellValue(sheet, fmt.Sprintf("C%d", i+3), item1.Operation)
-		xls.SetCellValue(sheet, fmt.Sprintf("E%d", i+3), item1.Status)
+		xls.SetCellValue(sheet, fmt.Sprintf("B%d", startRow+i), item1.Case)
+		xls.SetCellValue(sheet, fmt.Sprintf("C%d", startRow+i), item1.Operation)
+		xls.SetCellValue(sheet, fmt.Sprintf("E%d", startRow+i), item1.Status)
 	}
 	xls.SaveAs(*flagOutput)
 	return nil
